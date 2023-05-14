@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "pocketbase": "^0.14.0"
+  }
+}
