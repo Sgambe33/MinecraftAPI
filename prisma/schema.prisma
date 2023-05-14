@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator py {
+  provider             = "prisma-client-js"
+  recursive_type_depth = 5
+}
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// TODO DB TYPES
+model Blocks {
+  block_id  String @id @db.VarChar(40)
+  hardness Int
+
+  tool_required  Boolean
+  fire_resistant Boolean
+
+  light_emission   Int
+  blast_resistance Int
+
+  friction    Float
+  speed_factor Float
+  jump_factor  Float
+
+  block_group String @db.VarChar(40)
+  rarity     String @db.VarChar(40)
+
+  tags    BlockTags[]
+  recipes Recipes[]
+}
+
+model Items {
+  item_id        String  @id @db.VarChar(50)
+  item_group     String  @db.VarChar(40)
+  rarity        String  @db.VarChar(40)
+  fire_resistant Boolean
+  stack_size     Int
+  light_emission Int
+  attack_damage  Int
+  attack_speed   Int
+  defense       Int
+  efficiency    Int
+
+  tags    ItemTags[]
+  recipes Recipes[]
+}
+
+model Tags {
+  tag_id String @id @db.VarChar(40)
+  name  String @db.VarChar(50)
+
+  ItemTags   ItemTags[]
+  BlockTags  BlockTags[]
+  childTags Tags[]      @relation(name: "fatherTag")
+
+  father_tag String? @db.VarChar(50)
+  fatherTag   Tags?    @relation(fields: [father_tag], references: [tag_id], name: "fatherTag", onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([father_tag])
+}
+
+model ItemTags {
+  item_tags_id Int @id @default(autoincrement())
+
+  item_id String @db.VarChar(50)
+  tag_id  String @db.VarChar(50)
+
+  item Items @relation(fields: [item_id], references: [item_id])
+  tag  Tags  @relation(fields: [tag_id], references: [tag_id])
+
+  @@index([item_id])
+  @@index([tag_id])
+}
+
+model BlockTags {
+  block_tags_id Int @id @default(autoincrement())
+
+  tag_id   String @db.VarChar(50)
+  block_id String @db.VarChar(40)
+
+  tag   Tags   @relation(fields: [tag_id], references: [tag_id])
+  block Blocks @relation(fields: [block_id], references: [block_id])
+
+  @@index([tag_id])
+  @@index([block_id])
+}
+
+model Advancements {
+  advancement_id String @id @db.VarChar(70)
+  category      String @db.VarChar(20)
+  title         String @db.VarChar(50)
+  description   String @db.VarChar(100)
+  frame         String @db.VarChar(15)
+  icon          String @db.VarChar(50)
+
+  childAdvancements Advancements[] @relation(name: "parentAdvancement")
+
+  parent_advancement String?      @db.VarChar(70)
+  parentAdvancement   Advancements? @relation(fields: [parent_advancement], references: [advancement_id], onDelete: NoAction, onUpdate: NoAction, name: "parentAdvancement")
+
+  @@index([parent_advancement])
+}
+
+model Recipes {
+  recipe_id    Int    @id @default(autoincrement())
+  recipe_type  String @db.VarChar(50)
+  cooking_time Int?
+  experience  Float?
+
+  ingredient Json?
+  pattern    Json?
+
+  output_count   Int
+  output_item  String? @db.VarChar(50)
+  output_block String? @db.VarChar(50)
+
+  output_item_id  Items?  @relation(fields: [output_item], references: [item_id])
+  output_block_id Blocks? @relation(fields: [output_block], references: [block_id])
+
+  @@index([output_item])
+  @@index([output_block])
+}
