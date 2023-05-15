@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
 import got from 'got';
+const sharp = require('sharp');
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
     let name: string = req.query.name as string;
@@ -13,7 +14,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     if (isNaN(width)) width = 800;
     if (isNaN(height)) height = 800;
 
-    let img = got.stream(`https://ik.imagekit.io/9svr6904c/x800/${name}.png?tr=w-${width},h-${height}`);
+    let img = got.stream(`https://raw.githubusercontent.com/Sgambe33/MinecraftAPI/main/images/${name}.png`)
+    img = img.pipe(sharp().resize(width, height));
     res.setHeader('Content-Type', 'image/png');
     img.pipe(res);
 }
