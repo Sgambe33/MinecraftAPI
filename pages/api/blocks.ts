@@ -14,15 +14,17 @@ async function getBlocks(query: BlocksRouteProps) {
         where: {
             block_id: query.block_id,
             block_group: query.block_group
+        },
+        include: {
+            tags: true
         }
     });
     return block
 }
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-    getBlocks(req.query).then((blocks) => {
-        res.status(200).json(blocks);
-        res.end();
-    });
+    let blocks = await getBlocks(req.query);
     prisma.$disconnect();
+    res.status(200).json(blocks);
+    res.end();
 }
