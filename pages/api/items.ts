@@ -4,25 +4,27 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 const prisma = new PrismaClient()
 
-type BlocksRouteProps = {
-    block_id?: string
-    block_group?: string
+type ItemsRouteProps = {
+    item_id?: string
+    item_group?: string
 }
 
-async function getBlocks(query: BlocksRouteProps) {
-    const block = await prisma.blocks.findMany({
+async function getItems(query: ItemsRouteProps) {
+    const item = await prisma.items.findMany({
         where: {
-            block_id: query.block_id,
-            block_group: query.block_group
+            item_id: query.item_id,
+            item_group: query.item_group
+        },
+        include: {
+            tags: true
         }
     });
-    return block
+    return item
 }
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-    getBlocks(req.query).then((blocks) => {
-        res.status(200).json(blocks);
-        res.end();
-    });
+    let items = await getItems(req.query);
     prisma.$disconnect();
+    res.status(200).json(items);
+    res.end();
 }
