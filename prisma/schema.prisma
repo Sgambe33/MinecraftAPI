@@ -13,20 +13,17 @@ datasource db {
 // TODO DB TYPES
 model Blocks {
   block_id  String @id @db.VarChar(40)
-  hardness Int
-
-  tool_required  Boolean
-  fire_resistant Boolean
-
+  block_group String @db.VarChar(40)
   light_emission   Int
+  burn_chance Int
+  flammable Boolean
+  hardness Int
   blast_resistance Int
-
   friction    Float
   speed_factor Float
   jump_factor  Float
-
-  block_group String @db.VarChar(40)
   rarity     String @db.VarChar(40)
+  tool_required  Boolean
 
   tags    BlockTags[]
   recipes Recipes[]
@@ -35,14 +32,13 @@ model Blocks {
 model Items {
   item_id        String  @id @db.VarChar(50)
   item_group     String  @db.VarChar(40)
-  rarity        String  @db.VarChar(40)
-  fire_resistant Boolean
   stack_size     Int
-  light_emission Int
-  attack_damage  Int
-  attack_speed   Int
-  defense       Int
-  efficiency    Int
+  fire_resistant Boolean
+  rarity        String  @db.VarChar(40)
+  is_food      Boolean
+  is_damageable Boolean
+  is_enchantable Boolean
+  durability    Int
 
   tags    ItemTags[]
   recipes Recipes[]
