@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import path from 'path'
 import got from 'got';
 const sharp = require('sharp');
 
